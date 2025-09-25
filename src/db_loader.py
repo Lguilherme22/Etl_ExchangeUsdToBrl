@@ -1,41 +1,75 @@
 import logging
 from config.db_config import get_connection
 from datetime import datetime
+import psycopg2.extras 
 
 logger = logging.getLogger(__name__)
 
+
 def inserir_rates_em_usd(rates):
     now = datetime.now()
+    
+   
+    data_list_of_tuples = [
+        (moeda, now, taxa)
+        for moeda, taxa in rates.items()
+    ]
+    
+  
+    insert_query = """
+        INSERT INTO exchange_usd_rates (
+            description, datetime, float_rate
+        ) VALUES (%s, %s, %s)
+        ON CONFLICT (description, datetime) DO NOTHING;
+    """
+    
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                for moeda, taxa in rates.items():
-                    cursor.execute("""
-                        INSERT INTO exchange_usd_rates (
-                            description, datetime, float_rate
-                        ) VALUES (%s, %s, %s)
-                        ON CONFLICT (description, datetime) DO NOTHING;
-                    """, (moeda, now, taxa))
+                
+                psycopg2.extras.execute_values(
+                    cursor, 
+                    insert_query, 
+                    data_list_of_tuples, 
+                    page_size=1000 
+                )
             conn.commit()
-        logger.info("Dados USD inseridos com sucesso.")
+        logger.info("Dados USD inseridos com sucesso (BATCH INSERT).")
     except Exception as e:
-        logger.error(f"[inserir_rates_em_usd] erro ao inserir: {e}")
+        logger.error(f"[inserir_rates_em_usd] erro ao inserir BATCH: {e}")
+        raise e
+
 
 def inserir_rates_em_brl(rates_em_brl):
     now = datetime.now()
+   
+    data_list_of_tuples = [
+        (moeda, now, taxa, now, now)
+        for moeda, taxa in rates_em_brl.items()
+    ]
+    
+  
+    insert_query = """
+        INSERT INTO exchange_real_rates (
+            description_coin, datetime_rate, float_rate, etl_created_at, etl_updated_at
+        ) VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (description_coin, datetime_rate) DO UPDATE
+        SET float_rate = EXCLUDED.float_rate,
+            etl_updated_at = EXCLUDED.etl_updated_at;
+    """
+
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                for moeda, taxa in rates_em_brl.items():
-                    cursor.execute("""
-                        INSERT INTO exchange_real_rates (
-                            description_coin, datetime_rate, float_rate, etl_created_at, etl_updated_at
-                        ) VALUES (%s, %s, %s, %s, %s)
-                        ON CONFLICT (description_coin, datetime_rate) DO UPDATE
-                        SET float_rate = EXCLUDED.float_rate,
-                            etl_updated_at = EXCLUDED.etl_updated_at;
-                    """, (moeda, now, taxa, now, now))
+                
+                psycopg2.extras.execute_values(
+                    cursor, 
+                    insert_query, 
+                    data_list_of_tuples, 
+                    page_size=1000 
+                )
             conn.commit()
-        logger.info("Dados BRL inseridos com sucesso.")
+        logger.info("Dados BRL inseridos com sucesso (BATCH INSERT).")
     except Exception as e:
-        logger.error(f"[inserir_rates_em_brl] Erro ao inserir: {e}")
+        logger.error(f"[inserir_rates_em_brl] Erro ao inserir BATCH: {e}")
+        raise e 

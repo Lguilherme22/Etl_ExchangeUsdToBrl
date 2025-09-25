@@ -56,5 +56,9 @@ with DAG(
         python_callable=carregar_brl
     )
 
-    t1 >> [t2, t3]  
+
+# Revisar Ordem
+    t1 >> t2 >> t3  
     t2 >> t4
+
+    

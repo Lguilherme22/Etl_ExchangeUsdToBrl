@@ -1,3 +1,5 @@
+#Tipar saidas 
+
 import logging
 from src.api import fetch_exchange_rates
 from src.transform import calcular_rate_para_brl
