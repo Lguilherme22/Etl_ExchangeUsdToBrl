@@ -1,9 +1,7 @@
-#Tipar saidas 
-
 import logging
-from src.api import fetch_exchange_rates
-from src.transform import calcular_rate_para_brl
-from src.db_loader import inserir_rates_em_usd, inserir_rates_em_brl
+from api import fetch_exchange_rates
+from transform import calcular_rate_para_brl
+from db_loader import inserir_rates_em_usd, inserir_rates_em_brl
 
 logging.basicConfig(
     level=logging.INFO,

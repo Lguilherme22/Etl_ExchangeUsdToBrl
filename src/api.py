@@ -3,11 +3,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-API_KEY = "c30e61abcd9850dc14be64e6"
+API_KEY = "c30e61abcd9850dc14be64e6" #chave da api
 
 def fetch_exchange_rates():
     url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/USD"
     
+    #Faz conexão com a api
     try:
         response = requests.get(url)
         response.raise_for_status()

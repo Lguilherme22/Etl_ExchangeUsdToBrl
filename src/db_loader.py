@@ -15,11 +15,11 @@ def inserir_rates_em_usd(rates):
         for moeda, taxa in rates.items()
     ]
     
-  
+  #inserção de dados na tabela exchange_usd
     insert_query = """
         INSERT INTO exchange_usd_rates (
             description, datetime, float_rate
-        ) VALUES (%s, %s, %s)
+        ) VALUES %s
         ON CONFLICT (description, datetime) DO NOTHING;
     """
     
@@ -34,9 +34,9 @@ def inserir_rates_em_usd(rates):
                     page_size=1000 
                 )
             conn.commit()
-        logger.info("Dados USD inseridos com sucesso (BATCH INSERT).")
+        logger.info("Dados USD inseridos com sucesso (batch).")
     except Exception as e:
-        logger.error(f"[inserir_rates_em_usd] erro ao inserir BATCH: {e}")
+        logger.error(f"[inserir_rates_em_usd] erro ao inserir batch: {e}")
         raise e
 
 
@@ -48,15 +48,15 @@ def inserir_rates_em_brl(rates_em_brl):
         for moeda, taxa in rates_em_brl.items()
     ]
     
-  
+   #inserção de dados na tabela exchange_brl 
     insert_query = """
-        INSERT INTO exchange_real_rates (
-            description_coin, datetime_rate, float_rate, etl_created_at, etl_updated_at
-        ) VALUES (%s, %s, %s, %s, %s)
-        ON CONFLICT (description_coin, datetime_rate) DO UPDATE
-        SET float_rate = EXCLUDED.float_rate,
-            etl_updated_at = EXCLUDED.etl_updated_at;
-    """
+    INSERT INTO exchange_real_rates (
+        description_coin, datetime_rate, float_rate, etl_created_at, etl_updated_at
+    ) VALUES %s  
+    ON CONFLICT (description_coin, datetime_rate) DO UPDATE
+    SET float_rate = EXCLUDED.float_rate,
+        etl_updated_at = EXCLUDED.etl_updated_at;
+"""
 
     try:
         with get_connection() as conn:
@@ -69,7 +69,7 @@ def inserir_rates_em_brl(rates_em_brl):
                     page_size=1000 
                 )
             conn.commit()
-        logger.info("Dados BRL inseridos com sucesso (BATCH INSERT).")
+        logger.info("Dados BRL inseridos com sucesso (batch).") #caso sucesso, insira
     except Exception as e:
-        logger.error(f"[inserir_rates_em_brl] Erro ao inserir BATCH: {e}")
+        logger.error(f"[inserir_rates_em_brl] Erro ao inserir batch: {e}")#caso falha, pare
         raise e 

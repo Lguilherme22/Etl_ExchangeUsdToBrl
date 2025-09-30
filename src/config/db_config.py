@@ -9,5 +9,5 @@ DB_CONFIG = {
 }
 
 def get_connection():
-    conn = psycopg2.connect(DB_CONFIG)
+    conn = psycopg2.connect(**DB_CONFIG)
     return conn

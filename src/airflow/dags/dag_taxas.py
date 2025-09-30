@@ -60,5 +60,3 @@ with DAG(
 # Revisar Ordem
     t1 >> t2 >> t3  
     t2 >> t4
-
-    
