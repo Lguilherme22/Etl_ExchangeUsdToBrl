@@ -1,11 +1,11 @@
 import psycopg2
 
 DB_CONFIG = {
-    'host': 'localhost',
+    'host': 'my_postgres',
     'port': 5432,
-    'database': 'exchange',
-    'user': 'lrosa',
-    'password': 'root',
+    'database': 'mydatabase',
+    'user': 'user',
+    'password': 'password',
 }
 
 def get_connection():
