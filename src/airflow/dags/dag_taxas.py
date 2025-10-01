@@ -1,6 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
+from typing import Dict, Union, List, Any
 from api import fetch_exchange_rates
 from transform import calcular_rate_para_brl
 from db_loader import inserir_rates_em_usd, inserir_rates_em_brl
@@ -21,19 +22,19 @@ with DAG(
     tags=['etl', 'exchange'],
 ) as dag:
 
-    def extrair():
+    def extrair() ->Dict[str,float]:
         return fetch_exchange_rates()
 
-    def transformar(ti):
+    def transformar(ti:Any) ->List[Dict[str,Union[str,float]]]:
         rates = ti.xcom_pull(task_ids='extrair')
         return calcular_rate_para_brl(rates)
 
-    def carregar_usd(ti):
-        rates = ti.xcom_pull(task_ids='extrair')
+    def carregar_usd(ti:Any) -> None:
+        rates:Dict[str,float] = ti.xcom_pull(task_ids='extrair')
         inserir_rates_em_usd(rates)
 
-    def carregar_brl(ti):
-        rates_brl = ti.xcom_pull(task_ids='transformar')
+    def carregar_brl(ti:Any)-> None:
+        rates_brl:List[Dict[str,Union[str,float]]]= ti.xcom_pull(task_ids='transformar')
         inserir_rates_em_brl(rates_brl)
 
     t1 = PythonOperator(

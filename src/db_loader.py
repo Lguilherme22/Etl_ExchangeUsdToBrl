@@ -2,15 +2,18 @@ import logging
 from config.db_config import get_connection
 from datetime import datetime
 import psycopg2.extras 
+from typing import Dict, Union, List, Any,Tuple
 
 logger = logging.getLogger(__name__)
 
+ratetype = Dict[str,float]
+raterealtype = Dict[str,Union[str,float]]
 
-def inserir_rates_em_usd(rates):
+def inserir_rates_em_usd(rates:ratetype):
     now = datetime.now()
     
    
-    data_list_of_tuples = [
+    data_list_of_tuples:List[Tuple[str,datetime,float]] = [
         (moeda, now, taxa)
         for moeda, taxa in rates.items()
     ]
@@ -40,10 +43,10 @@ def inserir_rates_em_usd(rates):
         raise e
 
 
-def inserir_rates_em_brl(rates_em_brl):
+def inserir_rates_em_brl(rates_em_brl:raterealtype):
     now = datetime.now()
    
-    data_list_of_tuples = [
+    data_list_of_tuples: List[Tuple[str,datetime,Union[str,float,datetime,datetime]]] = [
         (moeda, now, taxa, now, now)
         for moeda, taxa in rates_em_brl.items()
     ]

@@ -1,6 +1,7 @@
 import psycopg2
+from typing import Dict,Union
 
-DB_CONFIG = {
+DB_CONFIG:Dict[str,Union[str,int]] = {
     'host': 'my_postgres',
     'port': 5432,
     'database': 'mydatabase',

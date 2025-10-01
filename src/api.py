@@ -13,11 +13,11 @@ def fetch_exchange_rates():
         response = requests.get(url)
         response.raise_for_status()
         data = response.json()
-        if data.get("result") != "success":
+        if data.get("result") != "success": #caso o resultado seja diferente de success, da erro
             raise Exception(f"Erro da API: {data.get('error-type', 'Erro desconhecido')}")
         logger.info("Dados da API recebidos com sucesso!")
         return data["conversion_rates"] 
-    except Exception as e:
+    except Exception as e: #caso não faça conexão, da erro
         logger.error(f"[fetch_exchange_rates] Erro: {e}")
         return {}
 
